@@ -1,0 +1,1 @@
+Do I have to LDE on arc ? Because it should be a public info for both prover and verifier. And also how can the prover check that the prover did use the correct hash constants?

@@ -18,6 +18,7 @@
 
 from hashlib import sha256
 from math import log2, ceil
+from field import FieldElement
 
 
 class MerkleTree(object):

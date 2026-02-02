@@ -1,26 +1,4 @@
-###############################################################################
-# Copyright 2019 StarkWare Industries Ltd.                                    #
-#                                                                             #
-# Licensed under the Apache License, Version 2.0 (the "License").             #
-# You may not use this file except in compliance with the License.            #
-# You may obtain a copy of the License at                                     #
-#                                                                             #
-# https://www.starkware.co/open-source-license/                               #
-#                                                                             #
-# Unless required by applicable law or agreed to in writing,                  #
-# software distributed under the License is distributed on an "AS IS" BASIS,  #
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.    #
-# See the License for the specific language governing permissions             #
-# and limitations under the License.                                          #
-###############################################################################
-
-
-"""
-An implementation of field elements from F_(3 * 2**30 + 1).
-"""
-
 from random import randint
-
 
 class FieldElement:
     """
@@ -30,24 +8,18 @@ class FieldElement:
     generator_val = 5
 
     def __init__(self, val):
-        self.val = val % FieldElement.k_modulus
+        # FIX: Force conversion to Python int to prevent Numpy int64 overflow
+        self.val = int(val) % FieldElement.k_modulus
 
     @staticmethod
     def zero():
-        """
-        Obtains the zero element of the field.
-        """
         return FieldElement(0)
 
     @staticmethod
     def one():
-        """
-        Obtains the unit element of the field.
-        """
         return FieldElement(1)
 
     def __repr__(self):
-        # Choose the shorter representation between the positive and negative values of the element.
         return repr((self.val + self.k_modulus//2) % self.k_modulus - self.k_modulus//2)
 
     def __eq__(self, other):
@@ -64,8 +36,9 @@ class FieldElement:
 
     @staticmethod
     def typecast(other):
-        if isinstance(other, int):
-            return FieldElement(other)
+        # FIX: Check for generic integer types to handle numpy.int64 gracefully
+        if hasattr(other, 'dtype') or isinstance(other, int) or isinstance(other, float):
+             return FieldElement(int(other))
         assert isinstance(other, FieldElement), f'Type mismatch: FieldElement and {type(other)}.'
         return other
 
@@ -77,7 +50,7 @@ class FieldElement:
             other = FieldElement.typecast(other)
         except AssertionError:
             return NotImplemented
-        return FieldElement((self.val + other.val) % FieldElement.k_modulus)
+        return FieldElement(self.val + other.val)
 
     __radd__ = __add__
 
@@ -86,7 +59,7 @@ class FieldElement:
             other = FieldElement.typecast(other)
         except AssertionError:
             return NotImplemented
-        return FieldElement((self.val - other.val) % FieldElement.k_modulus)
+        return FieldElement(self.val - other.val)
 
     def __rsub__(self, other):
         return -(self - other)
@@ -96,7 +69,8 @@ class FieldElement:
             other = FieldElement.typecast(other)
         except AssertionError:
             return NotImplemented
-        return FieldElement((self.val * other.val) % FieldElement.k_modulus)
+        # The overflow happened here because self.val was np.int64
+        return FieldElement(self.val * other.val)
 
     __rmul__ = __mul__
 
@@ -126,10 +100,6 @@ class FieldElement:
         return FieldElement(t)
 
     def is_order(self, n):
-        """
-        Naively checks that the element is of order n by raising it to all powers up to n, checking
-        that the element to the n-th power is the unit, but not so for any k<n.
-        """
         assert n >= 1
         h = FieldElement(1)
         for _ in range(1, n):

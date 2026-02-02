@@ -18,6 +18,7 @@
 
 import inspect
 from hashlib import sha256
+from field import FieldElement
 
 
 def serialize(obj):

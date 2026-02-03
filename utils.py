@@ -17,8 +17,8 @@ def primes(n):
 
 class Automata:
     def __init__(self, states, alphabet, transition, start_state, accept_states):
-        self.states = states
-        self.alphabet = alphabet
+        self.states = sorted(list(states))
+        self.alphabet = sorted(list(alphabet))
         self.transition = transition
         self.start_state = start_state
         self.accept_states = accept_states

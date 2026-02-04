@@ -1,18 +1,6 @@
-No problems atm ;)
+It seems like the hash is not "connected" to the word
+dynamic blowup factor
 
-59310 16384
-29655 8192
-14827 4096
-7413 2048
-3706 1024
-1853 512
-926 256
-463 128
-231 64
-115 32
-57 16
-28 8
-14 4
-7 2
-3 1
-1 0
+---- seems fixed?
+automata not working as expected
+cell 16 too slow (product vs zip) or eval
